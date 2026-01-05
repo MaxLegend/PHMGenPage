@@ -835,58 +835,34 @@
                 <div class="carousel-wrapper">
                     <div class="carousel" id="carousel">
                         <div class="carousel-slide">
-                            <div class="placeholder">
-                                <pre class="placeholder-ascii">
-    ┌─────────────────────────────────┐
-    │  ┌──────┐  ╔══════════════════╗ │
-    │  │ MENU │  ║                  ║ │
-    │  ├──────┤  ║   MAIN  WINDOW   ║ │
-    │  │ Item │  ║                  ║ │
-    │  │ Item │  ║                  ║ │
-    │  │ Item │  ╚══════════════════╝ │
-    │  └──────┘                       │
-    └─────────────────────────────────┘</pre>
-                                <p class="placeholder-text"><span>screen_01.png</span> — Main interface</p>
-                            </div>
+                      <img src="images/screen5.png" alt="sample">
+                        </div>
+                        <div class="carousel-slide">  
+  <img src="images/screen4.png" alt="sample">
                         </div>
                         <div class="carousel-slide">
-                            <div class="placeholder">
-                                <pre class="placeholder-ascii">
-    ┌─────────────────────────────────┐
-    │  SETTINGS            [×]        │
-    │  ─────────────────────────────  │
-    │  [✓] Dark mode                  │
-    │  [✓] Auto-update                │
-    │  [ ] Telemetry                  │
-    │  ─────────────────────────────  │
-    │  [  SAVE  ]    [  CANCEL  ]     │
-    └─────────────────────────────────┘</pre>
-                                <p class="placeholder-text"><span>screen_02.png</span> — Settings</p>
-                            </div>
+                                        <img src="images/screen6.png" alt="one sample">
                         </div>
-                        <div class="carousel-slide">
-                            <div class="placeholder">
-                                <pre class="placeholder-ascii">
-    ┌─────────────────────────────────┐
-    │  > Running task...              │
-    │  ████████████████░░░░ 78%       │
-    │                                 │
-    │  [i] Processing files...        │
-    │  [✓] Module 1 complete          │
-    │  [✓] Module 2 complete          │
-    │  [~] Module 3 in progress       │
-    └─────────────────────────────────┘</pre>
-                                <p class="placeholder-text"><span>screen_03.png</span> — Progress view</p>
-                            </div>
+                             <div class="carousel-slide">
+                                        <img src="images/screen1.png" alt="one sample">
+                        </div>
+                             <div class="carousel-slide">
+                                        <img src="images/screen2.png" alt="one sample">
+                        </div>
+                             <div class="carousel-slide">
+                                        <img src="images/screen3.png" alt="one sample">
                         </div>
                     </div>
                 </div>
 
               <div class="carousel-nav">
     <div class="carousel-dots" id="dots">
-        <button class="carousel-dot active" data-index="0"></button>
-        <button class="carousel-dot" data-index="1"></button>
-        <button class="carousel-dot" data-index="2"></button>
+  <button class="carousel-dot active" data-index="0"></button>
+  <button class="carousel-dot" data-index="1"></button>
+  <button class="carousel-dot" data-index="2"></button>
+  <button class="carousel-dot" data-index="3"></button>
+  <button class="carousel-dot" data-index="4"></button>
+   <button class="carousel-dot" data-index="5"></button>
     </div>
     <div class="carousel-counter">
         <span id="currentSlide">1</span>/3
@@ -915,7 +891,7 @@
     const dots = document.querySelectorAll('.carousel-dot');
     const counter = document.getElementById('currentSlide');
     let current = 0;
-    const total = 3;
+    const total = 6;
 
     function goTo(index) {
         if (index < 0) index = total - 1;
