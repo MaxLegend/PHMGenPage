@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHMGen — Download</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0c0c0c;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2d2d2d;
+            --bg-header: #202020;
+            --border: #3d3d3d;
+            --text: #cccccc;
+            --text-muted: #808080;
+            --blue: #3b78ff;
+            --cyan: #61d6d6;
+            --green: #16c60c;
+            --yellow: #f9f1a5;
+            --red: #e74856;
+            --purple: #b4009e;
+            --white: #f2f2f2;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Cascadia Code', 'JetBrains Mono', 'Consolas', monospace;
+            background: #000000;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(59, 120, 255, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .terminal {
+            width: 100%;
+            height: 100%;
+            max-width: 1400px;
+            max-height: 900px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 
+                0 25px 80px rgba(0, 0, 0, 0.8),
+                0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            animation: terminalOpen 0.4s ease-out;
+        }
+
+        @keyframes terminalOpen {
+            from {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .terminal-header {
+            background: var(--bg-header);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+            height: 40px;
+        }
+.copy-btn {
+    background: none;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    color: var(--cyan);
+    text-decoration: none;
+    width: 140px;
+    padding: 0.45rem 0.8rem;
+    border-radius: 4px;
+    background: rgba(97, 214, 214, 0.1);
+    border: 1px solid rgba(97, 214, 214, 0.3);
+    text-align: center;
+    font-size: 0.65rem;
+    transition: all 0.2s;
+}
+
+.copy-btn:hover {
+    color: var(--white);
+    background: rgba(97, 214, 214, 0.25);
+    border-color: var(--cyan);
+    box-shadow: 0 0 15px rgba(97, 214, 214, 0.3);
+}
+
+/* Всплывающее уведомление */
+.copy-toast {
+    background: var(--bg-tertiary);
+    color: var(--green);
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--green);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-family: 'Cascadia Code', 'JetBrains Mono', monospace;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.18s, transform 0.18s;
+    white-space: nowrap;
+    /* position и z-index теперь задаются в JS */
+}
+
+.copy-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+        .terminal-tabs {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            flex: 1;
+            padding-left: 0.5rem;
+        }
+
+        .terminal-tab {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0 1rem;
+            height: 100%;
+            background: var(--bg);
+            border-right: 1px solid var(--border);
+            font-size: 0.75rem;
+            color: var(--text);
+            position: relative;
+        }
+
+        .terminal-tab::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--blue);
+        }
+
+        .terminal-tab-icon {
+            width: 14px;
+            height: 14px;
+            opacity: 0.8;
+        }
+
+        .tab-close {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+            opacity: 0.5;
+            font-size: 0.9rem;
+        }
+
+        .tab-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 1;
+        }
+
+        .new-tab-btn {
+            width: 32px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .new-tab-btn:hover {
+            color: var(--text);
+        }
+
+        .window-controls {
+            display: flex;
+            height: 100%;
+        }
+
+        .window-btn {
+            width: 46px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            transition: background 0.15s;
+        }
+
+        .window-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .window-btn.close:hover {
+            background: var(--red);
+        }
+
+        .window-btn svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        .terminal-body {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 0;
+        }
+
+        .info-panel {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+            overflow: auto;
+        }
+
+        .prompt-line {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .prompt-path {
+            color: var(--yellow);
+        }
+
+        .prompt-arrow {
+            color: var(--cyan);
+        }
+
+        .prompt-cmd {
+            color: var(--green);
+        }
+
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+      margin-bottom: 2rem;
+        }
+
+        .ascii-logo {
+            color: var(--cyan);
+            font-size: 0.55rem;
+            line-height: 1.2;
+            white-space: pre;
+        }
+
+.links-panel {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.35rem;
+    flex-shrink: 0;
+}
+
+        .link-item {
+            color: var(--cyan);
+            text-decoration: none;
+            font-size: 0.65rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.45rem 0.8rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+            background: rgba(97, 214, 214, 0.1);
+            border: 1px solid rgba(97, 214, 214, 0.3);
+            text-align: center;
+            width: 140px;
+        }
+
+        .link-item:hover {
+            color: var(--white);
+            background: rgba(97, 214, 214, 0.25);
+            border-color: var(--cyan);
+            box-shadow: 0 0 15px rgba(97, 214, 214, 0.3);
+        }
+
+        .link-item svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .app-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--white);
+        }
+
+        .app-name .version {
+            font-size: 0.65rem;
+            background: rgba(59, 120, 255, 0.2);
+            color: var(--blue);
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 500;
+            border: 1px solid rgba(59, 120, 255, 0.3);
+        }
+
+        .tagline {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .tagline span {
+            color: var(--green);
+        }
+
+        .features-code {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.25rem;
+            font-size: 0.75rem;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .code-line {
+            display: flex;
+            margin-bottom: 0.35rem;
+        }
+
+        .line-number {
+            color: var(--text-muted);
+            width: 2rem;
+            text-align: right;
+            margin-right: 1.25rem;
+            user-select: none;
+            opacity: 0.4;
+        }
+
+        .code-content {
+            flex: 1;
+        }
+
+        .keyword { color: var(--blue); }
+        .string { color: #ce9178; }
+        .property { color: var(--cyan); }
+        .comment { color: var(--green); }
+        .boolean { color: var(--blue); }
+        .func { color: #dcdcaa; }
+        .bracket { color: var(--yellow); }
+
+        .download-section {
+            margin-top: auto;
+            padding-top: 1.5rem;
+        }
+
+        .download-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, rgba(59, 120, 255, 0.15), rgba(59, 120, 255, 0.05));
+            border: 1px solid var(--blue);
+            border-radius: 6px;
+            color: var(--blue);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-btn:hover {
+            background: rgba(59, 120, 255, 0.25);
+            box-shadow: 0 0 30px rgba(59, 120, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .download-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .download-meta {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 0.75rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .preview-panel {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-secondary);
+            min-height: 0;
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .preview-header .cmd {
+            color: var(--green);
+        }
+
+        .carousel-wrapper {
+            flex: 1;
+            position: relative;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            background: var(--bg);
+            min-height: 0;
+        }
+
+        .carousel {
+            display: flex;
+            height: 100%;
+            transition: transform 0.4s ease;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .carousel-slide img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        .placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            text-align: center;
+        }
+
+        .placeholder-ascii {
+            font-size: 0.5rem;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            color: var(--border);
+            white-space: pre;
+        }
+
+        .placeholder-text {
+            color: var(--text-muted);
+        }
+
+        .placeholder-text span {
+            color: var(--cyan);
+        }
+
+        .carousel-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1rem;
+            flex-shrink: 0;
+        }
+
+        .carousel-arrows {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .carousel-arrow {
+            width: 36px;
+            height: 36px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .carousel-arrow:hover {
+            border-color: var(--blue);
+            color: var(--blue);
+            background: rgba(59, 120, 255, 0.1);
+        }
+
+        .carousel-dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .carousel-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--border);
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .carousel-dot.active {
+            background: var(--blue);
+            width: 24px;
+        }
+
+        .carousel-counter {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .carousel-counter span {
+            color: var(--cyan);
+        }
+
+        .status-bar {
+            background: var(--bg-header);
+            padding: 0.3rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            flex-shrink: 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .status-left, .status-right {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        @media (max-width: 900px) {
+            body {
+                padding: 0;
+            }
+
+            .terminal {
+                border-radius: 0;
+                border: none;
+                max-width: none;
+                max-height: none;
+            }
+
+            .terminal-body {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+
+            .info-panel {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 1.25rem;
+            }
+
+            .top-section {
+                flex-direction: column;
+            }
+
+            .ascii-logo {
+                font-size: 0.35rem;
+            }
+
+            .links-panel {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+            }
+
+            .link-item {
+                width: auto;
+                flex: 1;
+                min-width: 100px;
+            }
+
+            .app-name {
+                font-size: 1.4rem;
+            }
+
+            .features-code {
+                display: none;
+            }
+
+            .preview-panel {
+                padding: 1.25rem;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .terminal-tab {
+                padding: 0 0.75rem;
+                font-size: 0.65rem;
+            }
+
+            .download-meta {
+                flex-wrap: wrap;
+                gap: 0.5rem 1rem;
+                justify-content: center;
+            }
+
+            .link-item {
+                font-size: 0.6rem;
+                padding: 0.4rem 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="terminal-header">
+            <div class="terminal-tabs">
+                <div class="terminal-tab">
+                    <svg class="terminal-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="4 17 10 11 4 5"></polyline>
+                        <line x1="12" y1="19" x2="20" y2="19"></line>
+                    </svg>
+                    <span>PHMGen.exe</span>
+                    <span class="tab-close">×</span>
+                </div>
+                <div class="new-tab-btn">+</div>
+            </div>
+            <div class="window-controls">
+                <div class="window-btn">
+                    <svg viewBox="0 0 10 10" fill="currentColor">
+                        <rect width="10" height="1" y="5"/>
+                    </svg>
+                </div>
+                <div class="window-btn">
+                    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1">
+                        <rect x="0.5" y="0.5" width="9" height="9"/>
+                    </svg>
+                </div>
+                <div class="window-btn close">
+                    <svg viewBox="0 0 10 10" stroke="currentColor" stroke-width="1.2">
+                        <line x1="1" y1="1" x2="9" y2="9"/>
+                        <line x1="9" y1="1" x2="1" y2="9"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="terminal-body">
+            <div class="info-panel">
+                <div class="prompt-line">
+                    <span class="prompt-path">&gt; C:\BestHeightmapGenerator</span>
+                    <span class="prompt-arrow">&gt&gt;</span>
+                    <span class="prompt-cmd">run</span>
+                </div>
+
+                <div class="top-section">
+                    <pre class="ascii-logo">
+ ██████╗ ██╗  ██╗███╗   ███╗ ██████╗ ███████╗███╗   ██╗
+ ██╔══██╗██║  ██║████╗ ████║██╔════╝ ██╔════╝████╗  ██║
+ ██████╔╝███████║██╔████╔██║██║  ███╗█████╗  ██╔██╗ ██║
+ ██╔═══╝ ██╔══██║██║╚██╔╝██║██║   ██║██╔══╝  ██║╚██╗██║
+ ██║     ██║  ██║██║ ╚═╝ ██║╚██████╔╝███████╗██║ ╚████║
+ ╚═╝     ╚═╝  ╚═╝╚═╝     ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝</pre>
+
+                    <div class="links-panel">
+                            <a href="https://github.com/MaxLegend/PHMGenPage/blob/main/PHMGen_Docs-RU.md" target="_blank" class="link-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                            </svg>
+                             RU docs
+                        </a>
+                   <button class="link-item copy-btn" data-copy="tesmio_two" type="button">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-discord" viewBox="0 0 16 16">
+  <path d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612"/>
+</svg>
+                            tesmio_two
+                     </button>
+                
+                        <a href="https://github.com/MaxLegend/PHMGenPage/blob/main/PHMGen_Docs-EN.md" target="_blank" class="link-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                            </svg>
+                            EN docs
+                        </a>
+<button class="link-item copy-btn" data-copy="@xcysteine" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telegram" viewBox="0 0 16 16">
+    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"/>
+  </svg>
+  xcysteine
+</button>
+                    </div>
+                </div>
+
+                <h1 class="app-name">
+                    PHMGen
+                    <span class="version">v1.1</span>
+                </h1>
+                <p class="tagline"><span>#</span> Tools for Game Devs, 3D designers and map-modders</p>
+
+                <div class="features-code">
+                      <div class="code-line">
+                        <span class="line-number">0</span>
+                        <span class="code-content"><span class="keyword"></span> <span class="bracket">{</span></span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-number">1</span>
+                        <span class="code-content"><span class="keyword">modular</span> <span class="string">multi-stage generation</span></span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-number">2</span>
+                        <span class="code-content">    <span class="property">multithreaded</span> <span class="string">processing</span></span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-number">3</span>
+                        <span class="code-content">    <span class="property">localization </span> <span class="string">ru & en</span></span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-number">4</span>
+                        <span class="code-content">    <span class="boolean">png-export</span> <span class="bracket">8-bit & 16bit</span></span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-number">5</span>
+                        <span class="code-content">    <span class="property">fastest</span> <span class="string">becouse</span> <span class="comment">C++</span> <span class="string">code</span>
+                    </div>
+                    <div class="code-line">
+                        <span class="line-number">6</span>
+                        <span class="code-content">    <span class="property">simulation </span> <span class="string">plate tectonics</span>  <span class="comment"></span></span>
+                    </div>
+                                          <div class="code-line">
+                        <span class="line-number">7</span>
+                        <span class="code-content">    <span class="property">simulation </span> <span class="string">thermal & hydraulic erosion</span> </span>
+                    </div>
+                      <div class="code-line">
+                        <span class="line-number">8</span>
+                        <span class="code-content">    <span class="boolean">price </span> <span class="string">only about</span>  <span class="comment">4$</span></span>
+                    </div>
+                <div class="code-line">
+                        <span class="line-number">9</span>
+                        <span class="code-content"><span class="bracket">}</span></span>
+                    </div>
+                    
+                </div>
+
+                <div class="download-section">
+                    <a href="https://boosty.to/tesmio/posts/24be27b8-767d-4213-907a-be912ab65f9b?share=post_link" download class="download-btn">
+               
+                        <span>&gt&gt buy & download phmgen.exe  </span>
+                    </a>
+                    <div class="download-meta">
+                        <span>windows</span>
+                        <span>size &lt 1 MB</span>
+                        <span>all right reserved</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-panel">
+                <div class="preview-header">
+                    <span class="cmd">Show-Screenshot</span> --Preview --All
+                </div>
+                
+                <div class="carousel-wrapper">
+                    <div class="carousel" id="carousel">
+                        <div class="carousel-slide">
+                            <div class="placeholder">
+                                <pre class="placeholder-ascii">
+    ┌─────────────────────────────────┐
+    │  ┌──────┐  ╔══════════════════╗ │
+    │  │ MENU │  ║                  ║ │
+    │  ├──────┤  ║   MAIN  WINDOW   ║ │
+    │  │ Item │  ║                  ║ │
+    │  │ Item │  ║                  ║ │
+    │  │ Item │  ╚══════════════════╝ │
+    │  └──────┘                       │
+    └─────────────────────────────────┘</pre>
+                                <p class="placeholder-text"><span>screen_01.png</span> — Main interface</p>
+                            </div>
+                        </div>
+                        <div class="carousel-slide">
+                            <div class="placeholder">
+                                <pre class="placeholder-ascii">
+    ┌─────────────────────────────────┐
+    │  SETTINGS            [×]        │
+    │  ─────────────────────────────  │
+    │  [✓] Dark mode                  │
+    │  [✓] Auto-update                │
+    │  [ ] Telemetry                  │
+    │  ─────────────────────────────  │
+    │  [  SAVE  ]    [  CANCEL  ]     │
+    └─────────────────────────────────┘</pre>
+                                <p class="placeholder-text"><span>screen_02.png</span> — Settings</p>
+                            </div>
+                        </div>
+                        <div class="carousel-slide">
+                            <div class="placeholder">
+                                <pre class="placeholder-ascii">
+    ┌─────────────────────────────────┐
+    │  > Running task...              │
+    │  ████████████████░░░░ 78%       │
+    │                                 │
+    │  [i] Processing files...        │
+    │  [✓] Module 1 complete          │
+    │  [✓] Module 2 complete          │
+    │  [~] Module 3 in progress       │
+    └─────────────────────────────────┘</pre>
+                                <p class="placeholder-text"><span>screen_03.png</span> — Progress view</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+              <div class="carousel-nav">
+    <div class="carousel-dots" id="dots">
+        <button class="carousel-dot active" data-index="0"></button>
+        <button class="carousel-dot" data-index="1"></button>
+        <button class="carousel-dot" data-index="2"></button>
+    </div>
+    <div class="carousel-counter">
+        <span id="currentSlide">1</span>/3
+    </div>
+</div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item">
+                    <span>01/15/26</span>
+                </div>
+                <div class="status-item">main</div>
+            </div>
+            <div class="status-right">
+                <div class="status-item">UTF-8</div>
+                <div class="status-item">CRLF</div>
+                <div class="status-item">cmd.exe</div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const carousel = document.getElementById('carousel');
+    const dots = document.querySelectorAll('.carousel-dot');
+    const counter = document.getElementById('currentSlide');
+    let current = 0;
+    const total = 3;
+
+    function goTo(index) {
+        if (index < 0) index = total - 1;
+        if (index >= total) index = 0;
+        current = index;
+        carousel.style.transform = `translateX(-${current * 100}%)`;
+        dots.forEach((d, i) => d.classList.toggle('active', i === current));
+        counter.textContent = current + 1;
+    }
+
+    // Убираем обработчики для стрелок — их больше нет
+    dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.index)));
+
+    // Автопрокрутка остаётся (или уберите, если не нужна)
+    setInterval(() => goTo(current + 1), 6000);
+</script>
+
+<script>
+// Создаём одно общее уведомление (toast)
+const toast = document.createElement('div');
+toast.className = 'copy-toast';
+toast.textContent = 'copied';
+toast.style.position = 'fixed';
+toast.style.zIndex = '1001';
+document.body.appendChild(toast);
+
+function showCopyToastAbove(element) {
+    // Получаем позицию кнопки
+    const rect = element.getBoundingClientRect();
+    
+    // Позиционируем над центром кнопки
+    toast.style.left = (rect.left + rect.width / 2 - toast.offsetWidth / 2) + 'px';
+    toast.style.top = (rect.top - toast.offsetHeight - 8) + 'px'; // 8px — отступ сверху
+    
+    // Показываем
+    toast.classList.add('show');
+    
+    // Скрываем через 1.2 сек
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 1200);
+}
+
+// Обработчик клика
+document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.copy-btn');
+    if (!btn) return;
+    const text = btn.getAttribute('data-copy');
+    if (!text) return;
+    try {
+        await navigator.clipboard.writeText(text);
+        showCopyToastAbove(btn);
+    } catch (err) {
+        console.error('Copy failed:', err);
+    }
+});
+</script>
+</body>
+</html>
