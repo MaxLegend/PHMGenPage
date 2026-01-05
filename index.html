@@ -875,13 +875,17 @@
             </div>
         </div>
 
-        <div class="status-bar">
-            <div class="status-left">
-                <div class="status-item">
-                    <span>01/15/26</span>
-                </div>
-                <div class="status-item">main</div>
-            </div>
+   <div class="status-left">
+    <div class="status-item">
+        <span id="current-date">01/01/01</span>
+    </div>
+    <div class="status-item">
+        <span id="view-counter">—</span> views
+    </div>
+    <div class="status-item">main</div>
+</div>
+    <div class="status-item">main</div>
+</div>
             <div class="status-right">
                 <div class="status-item">UTF-8</div>
                 <div class="status-item">CRLF</div>
@@ -911,6 +915,36 @@
 
     // Автопрокрутка остаётся (или уберите, если не нужна)
     setInterval(() => goTo(current + 1), 6000);
+
+    function updateDate() {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = String(now.getFullYear()).slice(-2);
+    document.getElementById('current-date').textContent = `${month}/${day}/${year}`;
+}
+updateDate();
+
+// === 2. ГЛОБАЛЬНЫЙ счётчик через CountAPI ===
+async function updateGlobalViewCounter() {
+    // Уникальный ключ для вашего проекта — замените "phmgen" на что-то уникальное
+    const namespace = 'phmgen';
+    const key = 'page_views';
+
+    try {
+        const response = await fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`);
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const data = await response.json();
+        document.getElementById('view-counter').textContent = data.value;
+    } catch (err) {
+        console.warn('Failed to update view counter:', err);
+        document.getElementById('view-counter').textContent = '?';
+    }
+}
+
+// Запускаем счётчик
+updateGlobalViewCounter();
 </script>
 
 <script>
