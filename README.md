@@ -1,4 +1,6 @@
 # PHMGen v.1.1 
-- is a powerful program for Windows that generates variable and realistic height maps with a resolution of up to 8k.
-Documentation:
-[English](README.en.md) | [Русский](README.ru.md)
+Is a powerful program for Windows that generates variable and realistic heightmaps with a resolution of up to 8k.
+---
+Documentation:  
+[English](PHMGen_Docs-RU.md)  
+[Русский](PHMGen_Docs-EN.md)  
