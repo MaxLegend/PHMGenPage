@@ -843,6 +843,9 @@
                         <div class="carousel-slide">
                                         <img src="images/screen6.png" alt="one sample">
                         </div>
+                                 <div class="carousel-slide">
+                                        <img src="images/screen35.png" alt="one sample">
+                        </div>
                              <div class="carousel-slide">
                                         <img src="images/screen1.png" alt="one sample">
                         </div>
@@ -863,6 +866,7 @@
   <button class="carousel-dot" data-index="3"></button>
   <button class="carousel-dot" data-index="4"></button>
    <button class="carousel-dot" data-index="5"></button>
+         <button class="carousel-dot" data-index="6"></button>
     </div>
     <div class="carousel-counter">
         <span id="currentSlide">1</span>/6
@@ -891,7 +895,7 @@
     const dots = document.querySelectorAll('.carousel-dot');
     const counter = document.getElementById('currentSlide');
     let current = 0;
-    const total = 6;
+    const total = 7;
 
     function goTo(index) {
         if (index < 0) index = total - 1;
