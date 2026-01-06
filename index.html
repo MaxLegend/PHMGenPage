@@ -875,25 +875,22 @@
             </div>
         </div>
 
-   <div class="status-left">
-    <div class="status-item">
-        <span id="current-date">01/01/01</span>
-    </div>
-    <div class="status-item">
-        <span id="view-counter">—</span> views
-    </div>
-    <div class="status-item">main</div>
-</div>
-    <div class="status-item">main</div>
-</div>
+  <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item">
+                    <span id="current-date">01/01/01</span>
+                </div>
+                <div class="status-item">
+                    <span id="view-counter">0</span> views
+                </div>
+                <div class="status-item">main</div>
+            </div>
             <div class="status-right">
                 <div class="status-item">UTF-8</div>
                 <div class="status-item">CRLF</div>
                 <div class="status-item">cmd.exe</div>
             </div>
         </div>
-    </div>
-
 <script>
     const carousel = document.getElementById('carousel');
     const dots = document.querySelectorAll('.carousel-dot');
@@ -922,8 +919,8 @@
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const year = String(now.getFullYear()).slice(-2);
     document.getElementById('current-date').textContent = `${month}/${day}/${year}`;
-}
-updateDate();
+	}
+	updateDate();
 
 // === 2. ГЛОБАЛЬНЫЙ счётчик через CountAPI ===
 async function updateGlobalViewCounter() {
