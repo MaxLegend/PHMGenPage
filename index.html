@@ -881,7 +881,7 @@
                     <span id="current-date">01/01/01</span>
                 </div>
                 <div class="status-item">
-                    <span id="counter">0</span> views
+                    <span id="counter">-</span> views
                 </div>
                 <div class="status-item">main</div>
             </div>
@@ -924,20 +924,7 @@
 
 
 </script>
-<script type="module">
-  import { Counter } from 'https://cdn.jsdelivr.net/npm/counterapi/dist/counter.esm.min.js';
 
-  // Create a counter client (V2 API)
-  const counter = new Counter({ workspace: 'my-workspace' });
-
-  // Increment a page view counter
-  counter.up('page-views')
-    .then(result => {
-      console.log(`Page views: ${result.value}`);
-      document.getElementById('counter').textContent = result.value;
-    })
-    .catch(error => console.error('Counter error:', error.message));
-</script>
 <script>
 // Создаём одно общее уведомление (toast)
 const toast = document.createElement('div');
